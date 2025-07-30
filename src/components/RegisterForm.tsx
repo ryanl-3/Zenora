@@ -63,7 +63,7 @@ export default function RegisterForm() {
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid gap-2 mb-4">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
