@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from 'next-auth/providers/google'
 import { compare } from "bcryptjs"
 import prisma from '@/lib/prisma'
+// import { User } from "@prisma/client";
+import type { User as NextAuthUser } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
     // Configure one or more authentication providers
@@ -21,11 +23,7 @@ export const authOptions: NextAuthOptions = {
             const user = await prisma.user.findUnique({
                 where: {email:credentials.email},
             })
-            if (!user) {return null}
-
-            if (!user?.password) {
-                throw new Error("Please use 'Continue with Google' to log in.");
-            }
+            if (!user || !user.password ) {return null}
             
             //password check
             const isValid = await compare(credentials.password, user.password)
@@ -34,8 +32,9 @@ export const authOptions: NextAuthOptions = {
             return{
                 id: user.id,
                 email: user.email,
-                name: user.name
+                name: user.name ?? undefined
             }
+
         },
     }),
     GoogleProvider({
@@ -57,40 +56,43 @@ export const authOptions: NextAuthOptions = {
         async redirect({ url, baseUrl }) {
             return baseUrl;
         },
-        // async signIn({account, profile}){
-        //     if(!profile?.email) {
-        //         throw new Error('No profile')
-        //     }
-        //     await prisma.user.upsert({
-        //         where:{
-        //             email: profile.email,
-        //         },
-        //         create:{
-        //             email: profile.email,
-        //             name: profile.name,
-        //         },
-        //         update: {
-        //             name: profile.name,
-        //         },
-        //     });
-        //     return true;
-        // },
+        async signIn({user, account}){
+            if(account?.provider === "google") {
+                const existingUser = await prisma.user.findUnique({
+                    where: {email: user.email! },
+                });
+                if(!existingUser){
+                    await prisma.user.create({
+                        data: {
+                            email:user.email!,
+                            name: user.name,
+                        },
+                    });
+                }
+            }
+            return true;
+        },
 
-        // // 2. Attaches user ID to JWT
-        // async jwt({ token, user }) {
-        //     if (user) {
-        //         token.id = user.id;
-        //     }
-        //     return token;
-        // },
+        //add DB user.id to JWT
+        async jwt({ token, user }) {
+            if (user?.email) {
+                const dbUser = await prisma.user.findUnique({
+                    where:{ email: user.email},
+                });
+                if(dbUser) {
+                    token.id = dbUser.id;
+                }
+            }
+            return token;
+        },
 
-        // // 3. Makes token.id available to session (client + server)
-        // async session({ session, token }) {
-        //     if (token?.id && session.user) {
-        //         session.user.id = token.id as string;
-        //     }
-        //     return session;
-        // },
+        //Makes token.id available to session (client + server)
+        async session({ session, token }) {
+            if (token?.id && session.user) {
+                session.user.id = token.id as string;
+            }
+            return session;
+        },
     },
 };
 
