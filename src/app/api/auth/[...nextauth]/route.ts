@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from 'next-auth/providers/google'
 import { compare } from "bcryptjs"
 import prisma from '@/lib/prisma'
+import { sendEmail } from "@/lib/ses";
 
 export const authOptions: NextAuthOptions = {
     // Configure one or more authentication providers
@@ -26,6 +27,17 @@ export const authOptions: NextAuthOptions = {
             //password check
             const isValid = await compare(credentials.password, user.password)
             if(!isValid){ return null }
+
+            //(Optional) notify on successful login
+            try {
+                await sendEmail({
+                    to: user.email, // must be a verified recipient in sandbox
+                    subject: "New login",
+                    text: `You just logged in at ${new Date().toISOString()}. If this wasn't you, contact support.`,
+                });
+            } catch (e) {
+            console.error("SES login email (credentials) failed:", e);
+            }
 
             return{
                 id: user.id,
@@ -60,12 +72,27 @@ export const authOptions: NextAuthOptions = {
                     where: {email: user.email! },
                 });
                 if(!existingUser){
-                    await prisma.user.create({
+                    const created = await prisma.user.create({
                         data: {
                             email:user.email!,
                             name: user.name,
                         },
                     });
+                }
+                try {
+                // In SES sandbox, the recipient must be verified.
+                const to =
+                    user.email!;
+
+                await sendEmail({
+                    to,
+                    subject: "You just signed in with Google",
+                    text: `Hi${user.name ? " " + user.name : ""}, you logged in at ${new Date().toISOString()}.`,
+                    html: `<p>Hi${user.name ? " " + user.name : ""},</p><p>You logged in at ${new Date().toISOString()}.</p>`,
+                });
+                } catch (e) {
+                console.error("SES login email (google) failed:", e);
+                // don't block login
                 }
             }
             return true;
