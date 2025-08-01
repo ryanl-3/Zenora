@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { signIn } from 'next-auth/react'
 
 export default function LoginForm() {
   const router = useRouter();
@@ -21,25 +22,20 @@ export default function LoginForm() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+    try{
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Login failed. Please try again.');
+      if (result?.error) {
+        setError('Login failed. Please try again.');
       } else {
         router.push('/');
         router.refresh(); // Refresh to update cookie/session state
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
+    }finally{
       setIsLoading(false);
     }
   }
@@ -102,7 +98,7 @@ export default function LoginForm() {
         variant="outline"
         type="button"
         disabled={isLoading}
-        // onClick={handleGoogleSignIn}
+        onClick={() => signIn('google')}
         className="w-full"
       >
         {/* Google Logo SVG */}
