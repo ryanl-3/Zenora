@@ -3,8 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from 'next-auth/providers/google'
 import { compare } from "bcryptjs"
 import prisma from '@/lib/prisma'
-// import { User } from "@prisma/client";
-import type { User as NextAuthUser } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
     // Configure one or more authentication providers
