@@ -13,7 +13,7 @@ export default async function HomePage() {
 
   return (
     <div className="p-8 space-y-4">
-      <h1 className="text-3xl font-bold">Welcome, {session.user?.name || session.user?.email}</h1>
+      <h1 className="text-3xl font-bold">Welcome, {session.user?.email}</h1>
       <LogoutButton />
     </div>
   );
