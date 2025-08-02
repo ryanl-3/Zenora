@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies
+
+```bash
+npm install @aws-sdk/client-sesv2 next-auth axios bcryptjs jsonwebtoken nodemailer react-hot-toast mongoose
+```
+
+Second, run the development server:
 
 ```bash
 npm run dev
