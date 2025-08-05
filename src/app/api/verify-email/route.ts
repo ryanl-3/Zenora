@@ -36,5 +36,5 @@ export async function GET(req: Request) {
 
     //redirect back to login
     const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-    return NextResponse.redirect(new URL(`${baseUrl}/login?verified=true`));
+    return NextResponse.redirect(new URL(`${baseUrl}/login`));
 }
