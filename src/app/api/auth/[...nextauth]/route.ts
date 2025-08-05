@@ -118,6 +118,7 @@ export const authOptions: NextAuthOptions = {
                 });
                 if(dbUser) {
                     token.id = dbUser.id;
+                    token.role = dbUser.role;
                 }
             }
             return token;
@@ -127,6 +128,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             if (token?.id && session.user) {
                 session.user.id = token.id as string;
+                session.user.role = token.role as string;
             }
             return session;
         },
