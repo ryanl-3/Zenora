@@ -1,3 +1,7 @@
+## [2025-08-05] 
+- Implemented Forgot Password and Reset Password functionality, including frontend UI and backend API integration.
+- Added manual Role-Based Access Control (RBAC) by enabling role assignment and access control through direct role updates in MongoDB.
+  
 ## [2025-08-01] 
 - Configured Amazon Simple Email Service (SES).
 - Integrated SES into a Next.js application using the NextAuth authentication system.
