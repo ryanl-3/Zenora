@@ -6,10 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useRouter } from 'next/navigation';
+
 
 export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const router=useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,11 +30,10 @@ export default function RegisterForm() {
         body: JSON.stringify({ name, email, password }),
       });
     
-
       const data = await res.json();
-      
       if (res.ok) {
         setMessage({ type: 'success', text: 'Registration successful!' });
+        router.push(data.redirectTo || '/');
       } else {
         setMessage({ type: 'error', text: data.error || 'Registration failed' });
       }

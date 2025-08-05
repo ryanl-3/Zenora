@@ -16,17 +16,30 @@ export const authOptions: NextAuthOptions = {
         },
         async authorize(credentials){
             //fast fail if input is invalid
-            if(!credentials?.email || !credentials?.password){ return null;}
-
+            if(!credentials?.email || !credentials?.password){ 
+                throw new Error("MISSING_CREDENTIALS");
+            }
+            
+            const normalizedEmail = credentials.email.trim().toLowerCase();
             //db search
             const user = await prisma.user.findUnique({
-                where: {email:credentials.email},
+                where: {email: normalizedEmail},
             })
-            if (!user || !user.password ) {return null}
+            if (!user || !user.password ) {
+                throw new Error("INVALID_CREDENTIALS");
+            }
+
+            //checks if verified
+            if (!user.emailVerified) {
+                throw new Error("EMAIL_NOT_VERIFIED");
+            }
+
             
             //password check
             const isValid = await compare(credentials.password, user.password)
-            if(!isValid){ return null }
+            if(!isValid){ 
+                throw new Error("INVALID_CREDENTIALS");
+             }
 
             //(Optional) notify on successful login
             try {
@@ -35,15 +48,15 @@ export const authOptions: NextAuthOptions = {
                     subject: "New login",
                     text: `You just logged in at ${new Date().toISOString()}. If this wasn't you, contact support.`,
                 });
-            } catch (e) {
-            console.error("SES login email (credentials) failed:", e);
+            } catch (error) {
+            console.error("SES login email (credentials) failed:", error);
             }
 
             return{
                 id: user.id,
                 email: user.email,
                 name: user.name ?? undefined
-            }
+            };
 
         },
     }),
@@ -81,8 +94,7 @@ export const authOptions: NextAuthOptions = {
                 }
                 try {
                 // In SES sandbox, the recipient must be verified.
-                const to =
-                    user.email!;
+                const to = user.email!;
 
                 await sendEmail({
                     to,
