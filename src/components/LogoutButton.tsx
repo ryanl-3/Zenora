@@ -8,11 +8,10 @@ import { useTransition } from 'react';
 export default function LogoutButton() {
   const [isPending, startTransition] = useTransition();
 
-
   const handleLogout = () => {
     startTransition(() => {
-      signOut({
-        callbackUrl: "/login", //redirect after logout
+      signOut({ redirect: false, callbackUrl: "/login" }).then(() => {
+        window.location.href = "/login"; // force redirect manually
       });
     });
   };

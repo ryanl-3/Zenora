@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now())
   resetToken         String?
   resetTokenExpiry   DateTime?
+  role      String   @default("user")
 
   // Added for email verification (NextAuth expects this)
   emailVerified DateTime?
