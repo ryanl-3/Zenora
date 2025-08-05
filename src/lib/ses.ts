@@ -17,6 +17,7 @@ type SendArgs = {
 };
 
 export async function sendEmail({ to, subject, html, text, from }: SendArgs) {
+  console.log("HTML being sent to SES:", html);
   const Destination = Array.isArray(to) ? { ToAddresses: to } : { ToAddresses: [to] };
   const Content = {
     Simple: {
