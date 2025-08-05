@@ -28,9 +28,23 @@ export default function LoginForm() {
         email,
         password,
       });
-
+      if (process.env.NODE_ENV === 'development') {
+        console.log('signIn result:', result); // <- look at result.error in the console
+      }
       if (result?.error) {
-        setError('Login failed. Please try again.');
+        switch (result.error) {
+          case "EMAIL_NOT_VERIFIED":  
+            setError("Your email isn’t verified yet. Check your inbox or resend the email.");
+            router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+
+            break;
+          case "MISSING_CREDENTIALS":
+            setError("Please provide both email and password.");
+            break;
+          case "INVALID_CREDENTIALS":
+          default:
+            setError("Invalid email or password.");
+        }
       } else {
         router.push('/');
         router.refresh(); // Refresh to update cookie/session state

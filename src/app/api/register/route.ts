@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
+import { sendVerificationEmail } from '@/lib/verify';
+
+
 //register
 export async function POST(req: Request) {
   try {
@@ -20,9 +23,10 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
+    
     // Normalize email
-    const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
+    const validName = name?.trim() || null;
 
     // Check for existing user
     const existingUser = await prisma.user.findUnique({
@@ -44,17 +48,49 @@ export async function POST(req: Request) {
       data: {
         email: normalizedEmail,
         password: hashedPassword,
-        name: name || null,
+        name: validName,
       },
+      select: {id: true, email: true, name:true},
     });
+    
+    //sends email with the token url
+    try {
+      await sendVerificationEmail(user.email);
+      return NextResponse.json(
+        {
+          message: 'User registered successfully.',
+          user: { id: user.id, email: user.email, name: user.name },
+          redirectTo: `/verify-email?email=${encodeURIComponent(user.email)}`,
+        },
+        { status: 201 }
+      );
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
 
-    return NextResponse.json(
-      {
-        message: 'User registered successfully.',
-        user: { id: user.id, email: user.email, name: user.name },
-      },
-      { status: 201 }
-    );
+      // Clean up user if verification failed
+      try {
+        await prisma.user.delete({ where: { id: user.id } });
+      } catch (cleanupError) {
+        console.error('Failed to delete user after email failure:', cleanupError);
+      }
+
+      // Ensure response is JSON
+      return NextResponse.json(
+        {
+          error: 'Verification email failed. Try again with another email.',
+        },
+        { status: 500 }
+      );
+    }
+
+    // return NextResponse.json(
+    //   {
+    //     message: 'User registered successfully.',
+    //     user: { id: user.id, email: user.email, name: user.name },
+    //   },
+    //   { status: 201 }
+    // );
+
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
