@@ -16,7 +16,10 @@ model User {
   createdAt DateTime @default(now())
   resetToken         String?
   resetTokenExpiry   DateTime?
-  role      String   @default("user")
+  role      String   @default("USER")
+  tickets   Ticket[] @relation("CreatedTickets")
+  assigned  Ticket[] @relation("AssignedTickets")
+
 
   // Added for email verification (NextAuth expects this)
   emailVerified DateTime?
@@ -33,3 +36,30 @@ model VerificationToken {
   // Composite unique constraint: ensures unique identifier-token combinations
   @@unique([identifier, token])
 }
+
+model Ticket {
+  id String @id @default(cuid()) @map("_id")
+  title        String
+  description  String
+  status       TicketStatus @default(OPEN)
+  createdBy    User     @relation("CreatedTickets", fields: [createdById], references: [id])
+  createdById  String
+  assignedTo   User?    @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  assignedToId String?  // nullable since a ticket may be unassigned
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  // messages     Message[]  @relation("TicketMessages") uncomment this when implementing messages
+}
+
+enum Role { // More roles can be added here
+  ADMIN
+  USER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+

@@ -46,7 +46,7 @@ export default function LoginForm() {
             setError("Invalid email or password.");
         }
       } else {
-        router.push('/');
+        router.push('/dashboard');
         router.refresh(); // Refresh to update cookie/session state
       }
     }finally{
