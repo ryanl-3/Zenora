@@ -42,15 +42,15 @@ export const authOptions: NextAuthOptions = {
              }
 
             //(Optional) notify on successful login
-            try {
-                await sendEmail({
-                    to: user.email, // must be a verified recipient in sandbox
-                    subject: "New login",
-                    text: `You just logged in at ${new Date().toISOString()}. If this wasn't you, contact support.`,
-                });
-            } catch (error) {
-            console.error("SES login email (credentials) failed:", error);
-            }
+            // try {
+            //     await sendEmail({
+            //         to: user.email, // must be a verified recipient in sandbox
+            //         subject: "New login",
+            //         text: `You just logged in at ${new Date().toISOString()}. If this wasn't you, contact support.`,
+            //     });
+            // } catch (error) {
+            // console.error("SES login email (credentials) failed:", error);
+            // }
 
             return{
                 id: user.id,
@@ -92,20 +92,21 @@ export const authOptions: NextAuthOptions = {
                         },
                     });
                 }
-                try {
-                // In SES sandbox, the recipient must be verified.
-                const to = user.email!;
+                // try {
+                // // In SES sandbox, the recipient must be verified.
+                // const to = user.email!;
 
-                await sendEmail({
-                    to,
-                    subject: "You just signed in with Google",
-                    text: `Hi${user.name ? " " + user.name : ""}, you logged in at ${new Date().toISOString()}.`,
-                    html: `<p>Hi${user.name ? " " + user.name : ""},</p><p>You logged in at ${new Date().toISOString()}.</p>`,
-                });
-                } catch (e) {
-                console.error("SES login email (google) failed:", e);
-                // don't block login
-                }
+                // await sendEmail({
+                //     to,
+                //     subject: "You just signed in with Google",
+                //     text: `Hi${user.name ? " " + user.name : ""}, you logged in at ${new Date().toISOString()}.`,
+                //     html: `<p>Hi${user.name ? " " + user.name : ""},</p><p>You logged in at ${new Date().toISOString()}.</p>`,
+                // });
+                // } catch (e) {
+                // console.error("SES login email (google) failed:", e);
+                // // don't block login
+                // }
+                
             }
             return true;
         },

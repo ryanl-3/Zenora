@@ -16,11 +16,11 @@ export default async function AdminPage() {
     <div className="p-4">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <p className="text-gray-700 mt-2">
-        Welcome, {role === "admin" ? "Admin" : "User"}!
+        Welcome, {role === "ADMIN" ? "Admin" : "User"}!
         <LogoutButton />
       </p>
 
-      {role === "admin" ? (
+      {role === "ADMIN" ? (
         <div className="mt-4">
           <p>You have full admin access to this dashboard.</p>
           {/* Render admin-specific components here */}
