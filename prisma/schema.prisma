@@ -38,7 +38,7 @@ model VerificationToken {
 }
 
 model Ticket {
-  id           String   @id @default(cuid())
+  id String @id @default(cuid()) @map("_id")
   title        String
   description  String
   status       TicketStatus @default(OPEN)
