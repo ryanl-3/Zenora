@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const {data: session, status} = useSession();
+  const role = session?.user?.role;
 
   return (
     <nav className="bg-gray-100 px-6 py-4 flex justify-between items-center border-b">
@@ -24,9 +26,16 @@ export default function Navbar() {
           Create Ticket
         </Link>
       </div>
-      <Button variant="outline" onClick={() => signOut({ callbackUrl: '/login' })}>
-        Log out
-      </Button>
+      <div className = "flex items-center gap-4">
+        {status==='loading'? null:(
+          <span className="text-sm text-gray-600">
+            {role === 'admin' ? 'Admin' : 'User'}
+          </span>
+        )}
+        <Button variant="outline" onClick={() => signOut({ callbackUrl: '/login' })}>
+          Log out
+        </Button>
+      </div>
     </nav>
   );
 }

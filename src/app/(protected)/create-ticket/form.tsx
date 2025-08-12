@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
 export default function CreateTicketForm() {
+  const [recipientEmail, setEmailRecipient] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ export default function CreateTicketForm() {
     const res = await fetch('/api/tickets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ recipientEmail, title, description }),
     });
 
     if (!res.ok) {
@@ -32,6 +33,12 @@ export default function CreateTicketForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <Input
+        type="email"
+        placeholder="Manager Email"
+        value={recipientEmail}
+        onChange={(e) => setEmailRecipient(e.target.value)}
+      />
       <Input
         type="text"
         placeholder="Title"

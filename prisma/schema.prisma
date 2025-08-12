@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
@@ -9,49 +9,67 @@ datasource db {
 }
 
 model User {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  email    String   @unique
-  password String?
-  name     String?
-  createdAt DateTime @default(now())
-  resetToken         String?
-  resetTokenExpiry   DateTime?
-  role      String   @default("USER")
-  tickets   Ticket[] @relation("CreatedTickets")
-  assigned  Ticket[] @relation("AssignedTickets")
-
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  email            String    @unique
+  password         String?
+  name             String?
+  createdAt        DateTime  @default(now())
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  role             String    @default("USER")
+  tickets          Ticket[]  @relation("CreatedTickets")
+  assigned         Ticket[]  @relation("AssignedTickets")
 
   // Added for email verification (NextAuth expects this)
   emailVerified DateTime?
+  messages      Message[]
 }
 
 // VerificationToken model - Stores email verification tokens
 // Used for magic link authentication and email verification flows
 model VerificationToken {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  identifier String                               // Usually an email address
-  token      String   @unique                     // Unique verification token
-  expires    DateTime                             // Token expiration time
+  identifier String // Usually an email address
+  token      String   @unique // Unique verification token
+  expires    DateTime // Token expiration time
 
   // Composite unique constraint: ensures unique identifier-token combinations
   @@unique([identifier, token])
 }
 
 model Ticket {
-  id String @id @default(cuid()) @map("_id")
+  id           String       @id @default(cuid()) @map("_id")
   title        String
   description  String
   status       TicketStatus @default(OPEN)
-  createdBy    User     @relation("CreatedTickets", fields: [createdById], references: [id])
-  createdById  String
-  assignedTo   User?    @relation("AssignedTickets", fields: [assignedToId], references: [id])
-  assignedToId String?  // nullable since a ticket may be unassigned
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  // messages     Message[]  @relation("TicketMessages") uncomment this when implementing messages
+  createdBy    User         @relation("CreatedTickets", fields: [createdById], references: [id])
+  createdById  String       @db.ObjectId
+  assignedTo   User?        @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  assignedToId String?      @db.ObjectId // nullable since a ticket may be unassigned
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  messages     Message[]    @relation("TicketMessages")
 }
 
-enum Role { // More roles can be added here
+model Message {
+  id       String @id @default(cuid()) @map("_id")
+  content  String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String @db.ObjectId
+
+  // message belongs to a Ticket (Ticket.id is cuid string)
+  ticket   Ticket @relation("TicketMessages", fields: [ticketId], references: [id])
+  ticketId String
+
+  // threaded replies (self-relation)
+  parent   Message?  @relation("ReplyChain", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId String?
+  replies  Message[] @relation("ReplyChain")
+
+  createdAt DateTime @default(now())
+}
+
+enum Role {
   ADMIN
   USER
 }
@@ -62,4 +80,3 @@ enum TicketStatus {
   RESOLVED
   CLOSED
 }
-
