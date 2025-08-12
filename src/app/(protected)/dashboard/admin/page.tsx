@@ -1,43 +1,13 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { redirect } from 'next/navigation';
-import prisma from '@/lib/prisma';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import DashboardHeader from "@/components/DashboardHeader";
 
-export default async function DashboardPage() {
+export default async function UserDashboard() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect('/login');
-  }
-
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      createdById: session.user.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">My Tickets</h1>
-
-      {tickets.length === 0 ? (
-        <p className="text-gray-600">You haven’t submitted any tickets yet.</p>
-      ) : (
-        <ul className="space-y-4">
-          {tickets.map((ticket) => (
-            <li key={ticket.id} className="border p-4 rounded shadow">
-              <h2 className="font-semibold text-lg">{ticket.title}</h2>
-              <p className="text-sm text-gray-600">{ticket.description}</p>
-              <p className="text-xs mt-2 text-gray-500">
-                Status: {ticket.status} | Created: {new Date(ticket.createdAt).toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="p-6">
+      {/* rest of your page */}
     </div>
   );
 }
