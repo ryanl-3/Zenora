@@ -7,6 +7,6 @@ export default async function DashboardIndex() {
   if (!session) redirect("/login");
 
   const role = session.user.role?.toLowerCase();
-  if (role === "admin") redirect("/admin");
-  redirect("/user");
+  if (role === "admin") redirect("/dashboard/admin");
+  redirect("/dashboard/user");
 }
