@@ -9,13 +9,17 @@ export default function ReplyForm({ticketId, canReply}: {ticketId: string; canRe
     const [content, setContent] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [pending, start] = useTransition();
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     if(!canReply) return null;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (isSubmitting) return;
         setError(null);
-        start(async () => {
+        setIsSubmitting(true);//stops multi click
+
+        try{
             const res = await fetch(`/api/tickets/${ticketId}/messages`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -30,7 +34,9 @@ export default function ReplyForm({ticketId, canReply}: {ticketId: string; canRe
             //means we show the reply button
             setOpen(false);
             window.location.reload();
-        });
+        }finally{
+            setIsSubmitting(false);
+        };
     };
 
     return open ? (
