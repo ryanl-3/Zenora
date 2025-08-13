@@ -15,6 +15,8 @@ const userItems: Item[] = [
   { label: "Properties", href: "/dashboard/user", icon: Home },
   { label: "AI Rent Analysis", href: "/dashboard/user/ai-rent", icon: BrainCog },
   { label: "Maintenance", href: "/dashboard/user/maintenance", icon: Wrench },
+  { label: "Tickets", href: "/tickets", icon: MessageSquare },
+  { label: "Create Ticket", href: "/create-ticket", icon: MessageSquare },
   { label: "Documents", href: "/dashboard/user/documents", icon: FileText },
   { label: "Settings", href: "/dashboard/user/settings", icon: Settings },
 ];
@@ -25,6 +27,8 @@ const adminItems: Item[] = [
   { label: "Marketing", href: "/dashboard/admin/marketing", icon: LineChart },
   { label: "Maintenance", href: "/dashboard/admin/maintenance", icon: Wrench },
   { label: "Messages", href: "/dashboard/admin/messages", icon: MessageSquare },
+  { label: "Tickets", href: "/tickets", icon: MessageSquare },
+  { label: "Create Ticket", href: "/create-ticket", icon: MessageSquare },
   { label: "Contacts", href: "/dashboard/admin/contacts", icon: Contact },
   { label: "Documents", href: "/dashboard/admin/documents", icon: FileText },
   { label: "Reports", href: "/dashboard/admin/reports", icon: BarChart3 },
