@@ -33,7 +33,7 @@ export default function CreateTicketForm() {
           setError(data.error || 'Failed to create ticket');
           return;
         }
-        router.push('/dashboard'); // or confirmation page
+        router.push('/tickets'); // or confirmation page
       } catch {
         setError('Network error. Please try again');
       }finally {
