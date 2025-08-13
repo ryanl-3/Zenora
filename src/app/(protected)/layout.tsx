@@ -1,3 +1,4 @@
+// import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 import { ReactNode } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
