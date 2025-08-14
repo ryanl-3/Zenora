@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
-export default function CreateTicketForm() {
+export default function CreateTicketForm({ basePath }: { basePath: '/dashboard/admin' | '/dashboard/user' }) {
   const [recipientEmail, setEmailRecipient] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,28 +17,32 @@ export default function CreateTicketForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(isSubmitting) return;
+    if (isSubmitting) return;
+
     setError('');
     setIsSubmitting(true);
-    
-    try{
-        const res = await fetch('/api/tickets', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipientEmail, title, description }),
-        });
 
-        if (!res.ok) {
-          const data = await res.json();
-          setError(data.error || 'Failed to create ticket');
-          return;
-        }
-        router.push('/tickets'); // or confirmation page
-      } catch {
-        setError('Network error. Please try again');
-      }finally {
-        setIsSubmitting(false);
+    try {
+      const res = await fetch('/api/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientEmail, title, description }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || 'Failed to create ticket');
+        return;
       }
+
+      // const { id } = await res.json(); // if your API returns it
+      // router.push(`${basePath}/tickets/${id}`);
+      router.push(`${basePath}/tickets`);
+    } catch {
+      setError('Network error. Please try again');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
