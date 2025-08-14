@@ -1,3 +1,9 @@
+## [2025-08-14] 
+- Reorganized file structure: after login, users are directed to /dashboard, which routes to either /dashboard/admin or /dashboard/user.
+- Each role folder contains its own tickets and create-ticket pages.
+- Centralized ticket creation and reply forms in /src/features/tickets.
+- Established /src/features as the main location for future features (e.g., messaging).
+
 ## [2025-08-11] 
 - Added RBAC policies and guard in lib/ folder.
 - Updated routing so admins and users have distinct dashboards.
