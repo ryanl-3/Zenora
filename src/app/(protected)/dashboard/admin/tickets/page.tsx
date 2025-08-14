@@ -35,7 +35,7 @@ export default async function TicketInbox() {
                 key={ticket.id} 
                 className="border p-4 rounded shadow hover:border-black hover:shadow-lg transition"
                 >
-                <Link href={`/tickets/${ticket.id}`} className="font-semibold text-lg">
+                <Link href={`/dashboard/admin/tickets/${ticket.id}`} className="font-semibold text-lg">
                     <h3 className="font-semibold text-lg">
                     To {ticket.assignedTo?.name ?? ticket.assignedTo?.email ?? 'Unassigned'}
                     </h3>                
@@ -61,7 +61,7 @@ export default async function TicketInbox() {
                 key={ticket.id} 
                 className="border p-4 rounded shadow hover:border-black hover:shadow-lg transition"
                 >
-                <Link href={`/tickets/${ticket.id}`} className="font-semibold text-lg">
+                <Link href={`/dashboard/user/tickets/${ticket.id}`} className="font-semibold text-lg">
                     <h2 className="font-semibold text-lg">{ticket.title}</h2>
                     <p className="text-sm text-gray-600">{ticket.description}</p>
                     <p className="text-xs mt-2 text-gray-500">

@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import {redirect} from 'next/navigation';
 import {authOptions} from '@/app/api/auth/[...nextauth]/route';
 import {getServerSession} from 'next-auth';
-import ReplyForm from './reply-form'
+import ReplyForm from '@/features/tickets/ReplyForm'
 
 export default async function TicketPage({params}: {params: Promise<{ id: string }>;}) {
     const {id} = await params;
